@@ -2,7 +2,7 @@
 
 A quick guide to the snags people hit most. If none of it helps, jump to [reporting a useful bug](#reporting-a-useful-bug) at the end.
 
-The permission and uninstall commands below all point at Vorssaint's bundle identifier, `com.vorssaint.utils`.
+The permission and uninstall commands below all point at Vorssaint's bundle identifier, `com.jorala.intelbar-util`.
 
 ## The app will not open
 
@@ -83,14 +83,14 @@ To wipe Vorssaint's granted permissions and let macOS ask again from scratch, pi
 - **From Terminal.** Reset all of Vorssaint's privacy permissions at once.
 
   ```sh
-  tccutil reset All com.vorssaint.utils
+  tccutil reset All com.jorala.intelbar-util
   ```
 
   Or reset a single kind, for example.
 
   ```sh
-  tccutil reset Accessibility com.vorssaint.utils
-  tccutil reset ScreenCapture com.vorssaint.utils
+  tccutil reset Accessibility com.jorala.intelbar-util
+  tccutil reset ScreenCapture com.jorala.intelbar-util
   ```
 
   A self-built Developer variant has its own grants under
@@ -109,7 +109,7 @@ The bundled script takes out everything Vorssaint added, the app itself, its pre
 Run it from a clone of the repository, or download the single script from the repo. Would you rather do it by hand? Quit Vorssaint, drag it from Applications to the Trash, then clear its permissions.
 
 ```sh
-tccutil reset All com.vorssaint.utils
+tccutil reset All com.jorala.intelbar-util
 ```
 
 ## Reporting a useful bug
