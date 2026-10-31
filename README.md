@@ -186,32 +186,6 @@ Reorder or hide panel sections, choose a compact layout, and export settings to 
 - **Extra brightness.** Use a MacBook Pro XDR display's HDR headroom to go beyond its normal maximum brightness.
 - **Bluetooth on sleep.** Disconnect Bluetooth during sleep and restore it on wake only if Vorssaint turned it off.
 
-## Install
-
-With [Homebrew](https://brew.sh):
-
-```sh
-brew install --cask vorssaint
-```
-
-Or grab the disk image from the [releases page](https://github.com/vorssaint/vorssaint-utils/releases) and drag Vorssaint into Applications.
-
-Builds are signed with an Apple Developer ID and notarized, so macOS opens them without a fuss and your permissions survive updates.
-
-## Uninstall
-
-With Homebrew:
-
-```sh
-brew uninstall --cask vorssaint
-```
-
-To remove Vorssaint completely, including its settings and permissions:
-
-```sh
-./Tools/uninstall.sh
-```
-
 ## Private by default
 
 Vorssaint is local-first, with no account, analytics or tracking. The network is touched only by things you can see: update checks, the speed test, Homebrew actions, optional online lyric lookup, temporary screenshot or recording links and feedback you explicitly send. The full story is in the [privacy notes](docs/PRIVACY.md).
@@ -228,17 +202,6 @@ See the [permissions guide](docs/PERMISSIONS.md) for which features need access 
 
 - A Mac with Apple Silicon or an Intel processor (Intel: build it yourself; some hardware features such as per-core temperatures may be limited)
 - macOS 14 Sonoma or newer
-
-### Build it yourself
-
-```sh
-git clone https://github.com/vorssaint/vorssaint-utils.git
-cd vorssaint-utils
-./build.sh --dev            # build the separate Developer variant
-./build.sh --dev --install  # install and launch it
-```
-
-Xcode Command Line Tools are the only requirement. The [contributing guide](CONTRIBUTING.md) covers the layout and conventions. Official builds come only from the maintainer: the GPL covers the source, while the Vorssaint name, icon and look are covered by [TRADEMARKS.md](TRADEMARKS.md), so forks need their own identity.
 
 ## When something misbehaves
 
