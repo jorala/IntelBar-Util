@@ -183,7 +183,7 @@ These documents come from the original project and describe it:
 ## Credits
 
 - **Vorssaint** was created by [@vorssaint](https://x.com/vorssaint). All of the original app, its design and nearly all of this code are their work. Original project: [vorssaint/vorssaint-utils](https://github.com/vorssaint/vorssaint-utils), website [vorssaint.com](https://vorssaint.com). If you like the app, please support the original author.
-- App icon designed by [@divisionseven](https://github.com/divisionseven).
+- The original Vorssaint app icon was designed by [@divisionseven](https://github.com/divisionseven). This fork uses its own generic chip icon, drawn for it.
 - Intel Mac changes in this fork by [@jorala](https://github.com/jorala), with help from Claude (Anthropic).
 
 ## License
