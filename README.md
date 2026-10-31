@@ -161,7 +161,7 @@ See the [permissions guide](docs/PERMISSIONS.md) for which features need access 
 
 ## What you need
 
-- A Mac with an Intel processor or Apple Silicon
+- A Mac with an Intel processor
 - macOS 14 Sonoma or newer
 - Xcode Command Line Tools, to build it
 
