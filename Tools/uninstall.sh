@@ -10,7 +10,7 @@
 set -uo pipefail
 
 BUNDLE="com.vorssaint.utils"
-APP="/Applications/Vorssaint.app"
+APP="/Applications/IntelBar Util.app"
 LEGACY_APP="/Applications/Vorssaint Utils.app"
 
 # A readable domain with a missing key is different from a failed read. Export

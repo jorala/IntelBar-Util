@@ -1,4 +1,4 @@
-<h1 align="center">Vorssaint Utils for Intel Mac</h1>
+<h1 align="center">IntelBar Util</h1>
 
 <p align="center">
   An unofficial fork of <a href="https://github.com/vorssaint/vorssaint-utils">Vorssaint</a>
@@ -37,7 +37,7 @@ cd vorssaint-utils-for-intel-mac
 ./build.sh --dev --install
 ```
 
-`--dev` installs a separate "Vorssaint (Developer)" app that will not collide with the official one. Running `./build.sh --install` without `--dev` builds the release version instead and replaces any official Vorssaint you have installed. `build.sh` now targets your Mac's own architecture; use `--arch=x86_64` or `--arch=arm64` to choose one. Run the app from the installed bundle, not from Xcode's Run button: macOS notifications crash a bare executable.
+`--dev` installs a separate "Vorssaint (Developer)" app that will not collide with the official one. Running `./build.sh --install` without `--dev` builds the release version instead and installs it as "IntelBar Util" in `/Applications`. `build.sh` now targets your Mac's own architecture; use `--arch=x86_64` or `--arch=arm64` to choose one. Run the app from the installed bundle, not from Xcode's Run button: macOS notifications crash a bare executable.
 
 ## Differences from the original
 

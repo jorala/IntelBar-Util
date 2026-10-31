@@ -55,7 +55,10 @@ if (( DEV )); then
     APP_OPTIMIZATION_FLAGS=(-Onone)
     BUILD_CONFIGURATION="debug"
 else
-    APP_NAME="Vorssaint"
+    # Unofficial Intel fork: its own visible name, per TRADEMARKS.md. The
+    # executable and bundle id stay as they were for now, because the code
+    # still refers to them directly.
+    APP_NAME="IntelBar Util"
     EXECUTABLE="Vorssaint"
     APP_BUNDLE_ID="com.vorssaint.utils"
     BUILD_VARIANT_FLAGS=()
@@ -703,6 +706,10 @@ cp CHANGELOG.md "$STAGE/Contents/Resources/CHANGELOG.md"
 for lproj in Resources/*.lproj(N); do
     cp -R "$lproj" "$STAGE/Contents/Resources/"
 done
+if (( ! DEV )); then
+    /usr/libexec/PlistBuddy -c "Set :CFBundleName $APP_NAME" "$STAGE/Contents/Info.plist"
+    /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $APP_NAME" "$STAGE/Contents/Info.plist"
+fi
 if (( DEV )); then
     # A distinct identity so the Developer build installs and runs next to the
     # official app, with its own permissions, preferences and login item.
