@@ -226,7 +226,7 @@ See the [permissions guide](docs/PERMISSIONS.md) for which features need access 
 
 ## What you need
 
-- A Mac with Apple Silicon
+- A Mac with Apple Silicon or an Intel processor (Intel: build it yourself; some hardware features such as per-core temperatures may be limited)
 - macOS 14 Sonoma or newer
 
 ### Build it yourself

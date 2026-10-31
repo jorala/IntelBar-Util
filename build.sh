@@ -32,8 +32,13 @@ DEV=0
 INSTALL=0
 TEST=0
 TEST_ARGS=()
+# Target architecture: the machine running the build by default, so an Intel
+# Mac builds x86_64 and an Apple Silicon Mac builds arm64. Override with
+# --arch=x86_64 or --arch=arm64 (cross-compiling works with the same SDK).
+ARCH="$(uname -m)"
 for arg in "$@"; do
     case "$arg" in
+        --arch=*)  ARCH="${arg#*=}" ;;
         --dev)     DEV=1 ;;
         --install) INSTALL=1 ;;
         --test)    TEST=1 ;;
@@ -62,7 +67,11 @@ FAN_HELPER_ID="$APP_BUNDLE_ID.fan-control"
 # Sources/NowPlayingAdapter. Staged under Contents/Frameworks, signed on its own.
 NOW_PLAYING_ADAPTER_ID="$APP_BUNDLE_ID.now-playing"
 NOW_PLAYING_ADAPTER="libVorssaintNowPlaying.dylib"
-TARGET="arm64-apple-macosx14.0"
+case "$ARCH" in
+    arm64|x86_64) ;;
+    *) echo "Unsupported --arch '$ARCH' (use arm64 or x86_64)." >&2; exit 1 ;;
+esac
+TARGET="$ARCH-apple-macosx14.0"
 ENTITLEMENTS="Resources/Vorssaint.entitlements"
 LEGACY_IDENTITY="Vorssaint Utils Signing"
 
@@ -247,7 +256,7 @@ discard_test_preferences() {
 # keyboard-data and media fixtures. No application windows or device capture.
 if (( TEST )); then
     python3 Tests/generate_sources.py
-    TEST_OBJECT_DIR="build/objects/tests"
+    TEST_OBJECT_DIR="build/objects/tests-$ARCH"
     mkdir -p "$TEST_OBJECT_DIR"
     TEST_SOURCES=(
         Sources/Vorssaint/Services/Media/MediaSupport.swift
@@ -609,7 +618,7 @@ if (( ! DEV )); then
     # changed since, and a fresh checkout has none.
     find build -mindepth 1 -maxdepth 1 ! -name objects -exec rm -rf {} + 2>/dev/null || true
 fi
-APP_OBJECT_DIR="build/objects/$EXECUTABLE"
+APP_OBJECT_DIR="build/objects/$EXECUTABLE-$ARCH"
 mkdir -p build "$APP_OBJECT_DIR"
 APP_OUTPUT_FILE_MAP="$APP_OBJECT_DIR/output-file-map.json"
 write_swift_output_file_map "$APP_OUTPUT_FILE_MAP" "$APP_OBJECT_DIR" "${APP_SOURCES[@]}"
