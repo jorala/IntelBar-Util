@@ -427,8 +427,11 @@ extension AppFeature {
     var hardwareUnsupportedReason: String? {
         switch self {
         case .fanControl:
-            return FanControlHardware.hasControllableFan
+            return AppFeature.runsOnAppleSilicon && FanControlHardware.hasControllableFan
                 ? nil : FeatureStrings.fanControl(L10n.shared.language).noFans
+        case .extraBrightness:
+            return AppFeature.runsOnAppleSilicon
+                ? nil : L10n.shared.s.extraBrightnessUnsupported
         default:
             return nil
         }

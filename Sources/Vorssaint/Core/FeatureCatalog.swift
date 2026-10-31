@@ -225,8 +225,24 @@ extension AppFeature {
     }
 
     func isAvailable(in defaults: UserDefaults) -> Bool {
-        defaults.bool(forKey: availabilityKey)
+        // Features built around Apple Silicon hardware never run on an Intel
+        // Mac, whatever an old preference or a restored backup says.
+        if requiresAppleSilicon && !Self.runsOnAppleSilicon { return false }
+        return defaults.bool(forKey: availabilityKey)
     }
+
+    /// Features that only make sense on Apple Silicon: Extra Brightness needs
+    /// the XDR panels of the M-series MacBook Pro, and Fan Control drives the
+    /// Apple Silicon fan interface.
+    var requiresAppleSilicon: Bool { self == .extraBrightness || self == .fanControl }
+
+    /// Asks the kernel rather than the compile-time architecture, so an Intel
+    /// build running under Rosetta on an Apple Silicon Mac still counts.
+    static let runsOnAppleSilicon: Bool = {
+        var value: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        return sysctlbyname("hw.optional.arm64", &value, &size, nil, 0) == 0 && value == 1
+    }()
 
     /// The feature's own enable keys; any one being true means the feature is
     /// engaged. Empty means the feature works on demand (a panel tile, a

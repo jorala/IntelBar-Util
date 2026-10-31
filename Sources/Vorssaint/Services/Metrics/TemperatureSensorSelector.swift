@@ -91,7 +91,12 @@ enum TemperatureSensorSelector {
 
     static func currentPlatform() -> CPUTemperaturePlatform {
         guard let brand = sysctlString("machdep.cpu.brand_string") else {
+            // Intel Macs have no Apple Silicon sensor map to fall back to.
+            #if arch(arm64)
             return .unmappedAppleSilicon
+            #else
+            return .generic
+            #endif
         }
         let identified = platform(brandString: brand)
         guard brand.trimmingCharacters(in: .whitespacesAndNewlines) == "Apple M4 Max" else {
