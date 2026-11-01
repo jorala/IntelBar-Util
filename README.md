@@ -32,8 +32,8 @@ Per app volume, a real system monitor, a better app switcher, window snapping, D
 Xcode Command Line Tools are the only requirement. In Terminal:
 
 ```
-git clone https://github.com/jorala/vorssaint-utils-for-intel-mac
-cd vorssaint-utils-for-intel-mac
+git clone https://github.com/jorala/IntelBar-Util
+cd IntelBar-Util
 ./build.sh --dev --install
 ```
 

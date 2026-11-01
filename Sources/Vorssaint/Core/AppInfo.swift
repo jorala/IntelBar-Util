@@ -8,7 +8,7 @@ enum AppInfo {
     static let name = "IntelBar Util"
     static let copyright = "© 2026 Vorssaint"
     static let websiteURL = URL(string: "https://vorssaint.com")!
-    static let repositoryURL = URL(string: "https://github.com/jorala/vorssaint-utils-for-intel-mac")!
+    static let repositoryURL = URL(string: "https://github.com/jorala/IntelBar-Util")!
     static let coffeeURL = URL(string: "https://buymeacoffee.com/vorssaint")!
     static let discordURL = URL(string: "https://discord.gg/M6BwWH4BJp")!
     static let socialURL = URL(string: "https://x.com/vorssaint")!
