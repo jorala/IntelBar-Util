@@ -45,7 +45,7 @@ let titleSize = title.size(withAttributes: titleAttrs)
 title.draw(at: NSPoint(x: (widthPt - titleSize.width) / 2, y: heightPt - 70), withAttributes: titleAttrs)
 
 // Subtitle / instruction.
-let subtitle = "Arraste o app para a pasta Aplicativos · Drag the app to Applications"
+let subtitle = "Drag the app to Applications"
 let subAttrs: [NSAttributedString.Key: Any] = [
     .font: NSFont.systemFont(ofSize: 12, weight: .regular),
     .foregroundColor: NSColor(calibratedWhite: 0.45, alpha: 1),
