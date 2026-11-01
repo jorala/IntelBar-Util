@@ -3,9 +3,12 @@ name: Release
 # Only an owner-created version tag can reach the protected signing job. The
 # preflight runs without release credentials and proves that the tag names a
 # verified commit already present on main before the environment can be approved.
+# This fork (jorala/vorssaint-utils-for-intel-mac) does not use this pipeline: it
+# needs the original author's signing and notarization secrets. Releases here
+# are built by hand (./build.sh and ./Tools/make-dmg.sh) and uploaded to GitHub
+# Releases. Pushing a version tag therefore must not start anything.
 on:
-  push:
-    tags: ["v[0-9]*"]
+  workflow_dispatch:
 
 permissions: {}
 
