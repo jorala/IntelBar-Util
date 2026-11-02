@@ -34,7 +34,18 @@ xattr -cr "$APP"
 codesign --verify --deep --strict "$APP"
 
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")"
-OUT="dist/IntelBar-Util-$VERSION.dmg"
+# Name the DMG after the architecture the app was built for, so an Intel and
+# an Apple Silicon build can sit side by side (build, make the DMG, build the
+# other architecture, make its DMG).
+EXEC_NAME="$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$APP/Contents/Info.plist")"
+APP_ARCHS="$(lipo -archs "$APP/Contents/MacOS/$EXEC_NAME" 2>/dev/null || echo unknown)"
+case "$APP_ARCHS" in
+    x86_64)       SUFFIX="Intel" ;;
+    arm64)        SUFFIX="AppleSilicon" ;;
+    *arm64*x86_64*|*x86_64*arm64*) SUFFIX="Universal" ;;
+    *)            SUFFIX="$APP_ARCHS" ;;
+esac
+OUT="dist/IntelBar-Util-$VERSION-$SUFFIX.dmg"
 
 echo "▸ Rendering installer background…"
 swift Tools/MakeDMGBackground.swift build/dmg-background.png

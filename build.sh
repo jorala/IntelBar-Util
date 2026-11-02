@@ -644,7 +644,12 @@ swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" "${BUILD_VARIAN
     Sources/Vorssaint/Services/FanControl/FanControlHardware.swift \
     Sources/FanControlHelper/main.swift \
     -o "build/$FAN_HELPER_ID"
-"build/$FAN_HELPER_ID" --selftest
+if [[ "$ARCH" == "$(uname -m)" ]]; then
+    "build/$FAN_HELPER_ID" --selftest
+else
+    # A binary built for the other architecture cannot run on this Mac.
+    echo "  (self-test skipped: built for $ARCH on a $(uname -m) Mac)"
+fi
 
 echo "▸ Compiling Now Playing adapter…"
 swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" -emit-library \

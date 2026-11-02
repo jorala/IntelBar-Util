@@ -37,6 +37,8 @@ cd IntelBar-Util
 ./build.sh --dev --install
 ```
 
+Two builds are published, one per kind of Mac: **Intel** and **Apple Silicon**. Pick the one that matches your Mac (Apple menu → About This Mac → Chip or Processor). To make both yourself, run `./build.sh --arch=x86_64 && ./Tools/make-dmg.sh`, then `./build.sh --arch=arm64 && ./Tools/make-dmg.sh`; each DMG is named for its architecture. (Building the other architecture works, but the self-test only runs for your own Mac's.)
+
 `--dev` installs a separate "Vorssaint (Developer)" app that will not collide with the official one. Running `./build.sh --install` without `--dev` builds the release version instead and installs it as "IntelBar Util" in `/Applications`. `build.sh` now targets your Mac's own architecture; use `--arch=x86_64` or `--arch=arm64` to choose one. Run the app from the installed bundle, not from Xcode's Run button: macOS notifications crash a bare executable.
 
 ## Differences from the original
