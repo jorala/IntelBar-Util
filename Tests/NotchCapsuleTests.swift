@@ -418,14 +418,14 @@ enum NotchCapsuleTests {
         suite.expect(stored.width == 8 && stored.height == 3 && stored.drop == 12,
                      "a fit written by hand lands on even widths and whole points")
         let wild = NotchCapsuleFit(width: 1_000, height: -.infinity, drop: .nan)
-        suite.expect(wild.width == 40 && wild.height == 0 && wild.drop == 0
-                     && NotchCapsuleFit(width: -1_000, height: -9, drop: -5) == NotchCapsuleFit(width: -40, height: -4, drop: 0)
-                     && NotchCapsuleFit(width: 80, height: 12, drop: 25) == NotchCapsuleFit(width: 40, height: 4, drop: 20),
+        suite.expect(wild.width == 160 && wild.height == 0 && wild.drop == 0
+                     && NotchCapsuleFit(width: -1_000, height: -9, drop: -5) == NotchCapsuleFit(width: -60, height: -8, drop: 0)
+                     && NotchCapsuleFit(width: 300, height: 40, drop: 50) == NotchCapsuleFit(width: 160, height: 24, drop: 40),
                      "a fit stays inside its ranges")
-        suite.expect(-NotchCapsuleFit.widthRange.lowerBound == NotchCapsuleFit.widthRange.upperBound
-                     && -NotchCapsuleFit.heightRange.lowerBound == NotchCapsuleFit.heightRange.upperBound
+        suite.expect(NotchCapsuleFit.widthRange.contains(0)
+                     && NotchCapsuleFit.heightRange.contains(0)
                      && NotchCapsuleFit.dropRange.lowerBound == 0,
-                     "an untouched width and height rest in the middle of their sliders, and the distance at its start")
+                     "an untouched fit sits inside its ranges, and the distance starts at zero")
 
         // The bar's bottom hairline reads as its edge, so the capsule keeps the
         // same margin above that line as below the top of the display, on a

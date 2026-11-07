@@ -163,12 +163,13 @@ struct NotchCameraFit: Equatable {
 /// A capsule sized and placed by hand. By itself it takes the height of the
 /// menu bar around it; a fit makes it wider or narrower at rest, taller or
 /// shorter from its top edge, and lowers it from the top of the display.
-/// Width and height reach as far each way, so an untouched slider rests in
-/// the middle, as the camera fit's do.
+/// Width and height can shrink a little and grow a lot in this fork.
 struct NotchCapsuleFit: Equatable {
-    static let widthRange = -40.0...40.0
-    static let heightRange = -4.0...4.0
-    static let dropRange = 0.0...20.0
+    // Widened in the IntelBar Util fork so the closed notch can be resized
+    // much further than the original's small correction.
+    static let widthRange = -60.0...160.0
+    static let heightRange = -8.0...24.0
+    static let dropRange = 0.0...40.0
     static let zero = NotchCapsuleFit(width: 0, height: 0, drop: 0)
 
     let width: CGFloat

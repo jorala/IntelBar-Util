@@ -10,12 +10,14 @@ import SwiftUI
 struct KillProcessView: View {
     @ObservedObject private var l10n = L10n.shared
     @ObservedObject private var service = KillProcessService.shared
+    @ObservedObject private var pauser = ProcessPauseService.shared
     @AppStorage(DefaultsKey.killProcessCommandBarEnabled) private var commandBarEnabled = true
     @Environment(\.controlActiveState) private var controlActiveState
     @State private var refreshTimer: Timer?
     @State private var pendingAction: PendingAction?
 
     private var strings: KillProcessFeatureStrings { FeatureStrings.killProcess(l10n.language) }
+    private var pauseStrings: ProcessPauseStrings { FeatureStrings.processPause(l10n.language) }
 
     private enum PendingAction {
         case kill(KillProcessEntry, force: Bool)
@@ -37,6 +39,9 @@ struct KillProcessView: View {
             updateTimer(for: controlActiveState)
         }
         .onDisappear { stopTimer() }
+        .onChange(of: service.entries) { _, _ in
+            pauser.prune()
+        }
         .onChange(of: controlActiveState) { _, newValue in
             updateTimer(for: newValue)
         }
@@ -74,6 +79,12 @@ struct KillProcessView: View {
 
             HStack(spacing: 16) {
                 Spacer()
+                if pauser.hasPausedApps {
+                    Button(String(format: pauseStrings.resumeAllFormat, pauser.pausedApps.count)) {
+                        pauser.resumeAll()
+                    }
+                    .controlSize(.small)
+                }
                 Text(String(format: strings.processCountFormat, service.filteredEntries.count))
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -106,7 +117,7 @@ struct KillProcessView: View {
 
     /// Mirrors `row(_:)`'s HStack widths exactly, so each label sits over its
     /// column: the leading `22`pt gap matches the row icon, and the trailing
-    /// `98`pt gap matches the Kill + "..." button cluster.
+    /// `192`pt gap matches the Pause + Kill + "..." button cluster.
     private var columnHeader: some View {
         HStack(spacing: 10) {
             Spacer().frame(width: 22)
@@ -118,7 +129,7 @@ struct KillProcessView: View {
                 .frame(width: 72, alignment: .trailing)
             columnHeaderButton(strings.columnPID, column: .pid)
                 .frame(width: 56, alignment: .trailing)
-            Spacer().frame(width: 98)
+            Spacer().frame(width: 192)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 6)
@@ -190,6 +201,10 @@ struct KillProcessView: View {
                         Text(String(format: strings.processCountFormat, entry.groupedCount))
                             .font(.system(size: 10)).foregroundStyle(.tertiary)
                     }
+                    if pauser.isPaused(pid: entry.pid) {
+                        Text(pauseStrings.pausedBadge)
+                            .font(.system(size: 10, weight: .medium)).foregroundStyle(.orange)
+                    }
                 }
                 Text(entry.path)
                     .font(.system(size: 10.5)).foregroundStyle(.tertiary)
@@ -205,6 +220,19 @@ struct KillProcessView: View {
             Text(String(entry.pid))
                 .font(.system(size: 11, design: .monospaced)).foregroundStyle(.secondary)
                 .frame(width: 56, alignment: .trailing)
+            if pauser.isPaused(pid: entry.pid) {
+                Button(pauseStrings.resumeButton) { pauser.resume(pid: entry.pid) }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(width: 84)
+            } else {
+                Button(pauseStrings.pauseButton) { pauser.pause(entry) }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(width: 84)
+                    .disabled(!pauser.canPause(entry))
+                    .help(pauseStrings.pauseHelp)
+            }
             Button(strings.killButton) {
                 pendingAction = .kill(entry, force: false)
             }
@@ -269,7 +297,14 @@ struct KillProcessView: View {
 
     private func perform(_ action: PendingAction) {
         switch action {
-        case let .kill(entry, force): service.kill(entry, force: force)
+        case let .kill(entry, force):
+            // A frozen app cannot answer a polite quit request, so wake it
+            // before asking. A force kill works either way.
+            if !force, pauser.isPaused(pid: entry.pid) {
+                pauser.resume(pid: entry.pid) { service.kill(entry, force: false) }
+            } else {
+                service.kill(entry, force: force)
+            }
         case let .killAll(name, force): service.killAll(named: name, force: force)
         case let .killTree(entry, force): service.killTree(entry, force: force)
         }
