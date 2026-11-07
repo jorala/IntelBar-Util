@@ -36,9 +36,18 @@ TEST_ARGS=()
 # Mac builds x86_64 and an Apple Silicon Mac builds arm64. Override with
 # --arch=x86_64 or --arch=arm64 (cross-compiling works with the same SDK).
 ARCH="$(uname -m)"
+# --universal builds both slices (x86_64 and arm64) and merges them with lipo
+# into one app that runs natively on every Mac. The two other flags are used by
+# --universal itself: each slice runs as its own child build that only compiles
+# the binaries (--binaries-only), then the parent merges them (MERGE_SLICES).
+UNIVERSAL=0
+BINARIES_ONLY=0
+MERGE_SLICES=0
 for arg in "$@"; do
     case "$arg" in
         --arch=*)  ARCH="${arg#*=}" ;;
+        --universal) UNIVERSAL=1 ;;
+        --binaries-only) BINARIES_ONLY=1 ;;
         --dev)     DEV=1 ;;
         --install) INSTALL=1 ;;
         --test)    TEST=1 ;;
@@ -612,6 +621,18 @@ if (( TEST )); then
     exit $test_status
 fi
 
+if (( UNIVERSAL && ! BINARIES_ONLY )); then
+    SLICE_ARGS=()
+    (( DEV )) && SLICE_ARGS+=(--dev)
+    mkdir -p build
+    rm -rf build/slices
+    for slice_arch in x86_64 arm64; do
+        echo "▸ Universal build: compiling the $slice_arch slice…"
+        "$0" "${SLICE_ARGS[@]}" --arch="$slice_arch" --binaries-only || exit $?
+    done
+    MERGE_SLICES=1
+fi
+
 echo "▸ Compiling ($BUILD_CONFIGURATION) against $(basename "$SDK")…"
 APP_SOURCES=(Sources/Vorssaint/**/*.swift)
 if (( ! DEV )); then
@@ -619,8 +640,16 @@ if (( ! DEV )); then
     # build left behind (an old icon catalog, a staged bundle) can reach it.
     # Only the compiler's incremental records stay: they rebuild whatever
     # changed since, and a fresh checkout has none.
-    find build -mindepth 1 -maxdepth 1 ! -name objects -exec rm -rf {} + 2>/dev/null || true
+    find build -mindepth 1 -maxdepth 1 ! -name objects ! -name slices -exec rm -rf {} + 2>/dev/null || true
 fi
+if (( MERGE_SLICES )); then
+echo "▸ Merging the x86_64 and arm64 slices into universal binaries…"
+for universal_file in "$EXECUTABLE" "$FAN_HELPER_ID" "$NOW_PLAYING_ADAPTER"; do
+    lipo -create "build/slices/x86_64/$universal_file" "build/slices/arm64/$universal_file" \
+        -output "build/$universal_file"
+    echo "  $universal_file: $(lipo -archs "build/$universal_file")"
+done
+else
 APP_OBJECT_DIR="build/objects/$EXECUTABLE-$ARCH"
 mkdir -p build "$APP_OBJECT_DIR"
 APP_OUTPUT_FILE_MAP="$APP_OBJECT_DIR/output-file-map.json"
@@ -660,6 +689,15 @@ swiftc -O -target "$TARGET" -sdk "$SDK" "${SDK_COMPAT_FLAGS[@]}" -emit-library \
     Sources/Vorssaint/Services/Notch/NotchPlaybackSource.swift \
     Sources/Vorssaint/Services/Notch/NotchPlaybackCommand.swift \
     -o "build/$NOW_PLAYING_ADAPTER"
+
+if (( BINARIES_ONLY )); then
+    # A --universal slice: keep the three binaries for the merge and stop here.
+    mkdir -p "build/slices/$ARCH"
+    cp "build/$EXECUTABLE" "build/$FAN_HELPER_ID" "build/$NOW_PLAYING_ADAPTER" "build/slices/$ARCH/"
+    echo "✓ $ARCH slice built"
+    exit 0
+fi
+fi
 
 echo "▸ Generating app icon…"
 swift Tools/MakeIcon.swift build/AppIcon.iconset
