@@ -268,20 +268,21 @@ struct NotchSettings: View {
                         Button(text.showOnAllDisplays) { display = NotchDisplay.all.rawValue }
                     }
                 }
-                if NotchSilhouette(rawValue: silhouette) ?? .capsule == .capsule {
-                    SettingsCard(title: text.capsuleFit) {
+                let isCapsule = NotchSilhouette(rawValue: silhouette) ?? .capsule == .capsule
+                SettingsCard(title: isCapsule ? text.capsuleFit : text.cameraFit) {
                         Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 10) {
                             // Even widths keep the capsule centred on whole points.
                             fitSlider(text.width, card: text.capsuleFit, value: $capsuleFitWidth,
                                       range: NotchCapsuleFit.widthRange, step: 2)
                             fitSlider(text.height, card: text.capsuleFit, value: $capsuleFitHeight,
                                       range: NotchCapsuleFit.heightRange, step: 1)
-                            fitSlider(text.fromTop, card: text.capsuleFit, value: $capsuleFitDrop,
-                                      range: NotchCapsuleFit.dropRange, step: 1)
+                            if isCapsule {
+                                fitSlider(text.fromTop, card: text.capsuleFit, value: $capsuleFitDrop,
+                                          range: NotchCapsuleFit.dropRange, step: 1)
+                            }
                         }
                         Text(text.capsuleFitHint).font(.caption).foregroundStyle(.secondary)
                     }
-                }
             }
             SettingsCard {
                 switchRow("capsule", text.showOutline, isOn: $outlineEnabled)

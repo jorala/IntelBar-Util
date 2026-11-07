@@ -2303,6 +2303,9 @@ struct NotchGeometry: Equatable {
         let gap: CGFloat? = !isNotched && silhouette == .capsule ? NotchLayout.capsuleGap(barHeight: barHeight) : nil
         floatingGap = gap
         // A fitted capsule grows from its top edge, keeping its margins.
+        // IntelBar Util: on a display without a camera the simulated notch
+        // takes the same width and height fit, so it can be resized too.
+        let notchFit = (!isNotched && gap == nil) ? capsuleFit : NotchCapsuleFit.zero
         let capsuleFit = gap == nil ? NotchCapsuleFit.zero : capsuleFit
         floatingDrop = capsuleFit.drop
         capsuleWidthFit = capsuleFit.width
@@ -2321,7 +2324,7 @@ struct NotchGeometry: Equatable {
         let room = isNotched && outline ? NotchLayout.outlineWidth : 0
         outlineRoom = room
         self.cameraWidth = min(isNotched ? max(0, cameraWidth + fit.width + room * 2)
-                               : gap == nil ? simulated : (simulated + capsuleFit.width).rounded(),
+                               : gap == nil ? (simulated + notchFit.width).rounded() : (simulated + capsuleFit.width).rounded(),
                                screen.width * 0.7)
         if isNotched {
             // The menu bar can extend slightly below the camera's safe area.
@@ -2329,7 +2332,7 @@ struct NotchGeometry: Equatable {
             let baseHeight = hideMenuBarGap ? max(safeAreaTop, barHeight) : safeAreaTop
             cameraHeight = min(max(0, baseHeight + fit.height + room), 64)
         } else {
-            cameraHeight = stripHeight
+            cameraHeight = max(16, stripHeight + notchFit.height)
         }
         self.menuBarHeight = max(cameraHeight, barHeight)
         self.compactSideRoom = compactSideRoom
